@@ -1,9 +1,18 @@
 import { auth } from "../firebase";
 
-export async function loadChatHistory(userId, sessionId, setMessages) {
+// ✅ FIXED — returns messages instead of trying to call setMessages
+export async function loadChatHistory(userId, sessionId) {
   const res = await fetch(`http://localhost:5000/api/chat/history/${userId}/${sessionId}`);
   const data = await res.json();
-  if (data.success) setMessages(data.messages.map((m) => ({ sender: m.sender, text: m.message })));
+
+  if (!data.success) return [];
+
+  // Convert backend format → frontend format
+  return data.messages.map((m) => ({
+    sender: m.sender,
+    text: m.message,
+    timestamp: m.timestamp
+  }));
 }
 
 export async function loadSessions(userId, setSessions) {
@@ -22,13 +31,10 @@ export async function saveMessage(userId, sender, text, sessionId) {
 
 export async function deleteSession(sid) {
   const userId = auth.currentUser?.uid;
-  console.log("🧹 Deleting session:", sid, "for user:", userId);
 
   const res = await fetch(`http://localhost:5000/api/chat/clear/${userId}/${sid}`, {
     method: "DELETE",
   });
 
-  const data = await res.json();
-  console.log("🧾 Delete response:", data);
-  return data;
+  return await res.json();
 }

@@ -1,4 +1,4 @@
-// src/components/ChatBot.jsx
+// src/pages/ChatBot.jsx
 import React from "react";
 
 function ChatBot() {
