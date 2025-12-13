@@ -44,17 +44,24 @@ export default function MainApp() {
 
   // Fetch shows
   useEffect(() => {
-    const fetchShows = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/shows");
-        const data = await res.json();
-        setShows(data);
-      } catch (err) {
-        console.error("Error fetching shows:", err);
+  const fetchShows = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/shows");
+      const data = await res.json();
+      console.log("Fetched shows:", data); // optional, for debugging
+      if (data.success && Array.isArray(data.shows)) {
+        setShows(data.shows); // ✅ set only the array
+      } else {
+        setShows([]); // fallback
       }
-    };
-    fetchShows();
-  }, []);
+    } catch (err) {
+      console.error("Error fetching shows:", err);
+      setShows([]); // fallback
+    }
+  };
+  fetchShows();
+}, []);
+
 
   // Fetch tickets
   const fetchTickets = async () => {

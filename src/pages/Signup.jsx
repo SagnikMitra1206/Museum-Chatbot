@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { auth, googleProvider } from "../firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import museumImage from "../assets/museum.jpg";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -9,14 +14,25 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name, phoneNumber: phone });
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await updateProfile(userCredential.user, {
+        displayName: name,
+        phoneNumber: phone,
+      });
+
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -28,25 +44,95 @@ export default function Signup() {
       await signInWithPopup(auth, googleProvider);
       navigate("/app");
     } catch (err) {
-      setError(err.message);
+      setError("Google signup failed. Try again.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center m-0 p-10"
+      style={{
+        backgroundImage: `url(${museumImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div className="backdrop-blur-lg bg-white/20 p-8 rounded-2xl shadow-xl w-full max-w-md border border-white/30">
+        <h1 className="text-3xl font-bold mb-6 text-center text-white drop-shadow-lg">
+          Create Account
+        </h1>
+
+        {error && <p className="text-red-300 font-semibold mb-4">{error}</p>}
+
         <form onSubmit={handleSignup} className="space-y-4">
-          <input type="text" placeholder="Full Name" className="w-full p-2 border rounded" value={name} onChange={e => setName(e.target.value)} required />
-          <input type="tel" placeholder="Phone Number" className="w-full p-2 border rounded" value={phone} onChange={e => setPhone(e.target.value)} required />
-          <input type="email" placeholder="Email" className="w-full p-2 border rounded" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="password" placeholder="Password" className="w-full p-2 border rounded" value={password} onChange={e => setPassword(e.target.value)} required />
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Sign Up</button>
+          <div>
+            <label className="block mb-1 font-medium text-white">Full Name</label>
+            <input
+              type="text"
+              className="w-full border border-white/40 bg-white/30 backdrop-blur-xl rounded-md p-2 text-white placeholder-white/70"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-white">Phone</label>
+            <input
+              type="tel"
+              className="w-full border border-white/40 bg-white/30 backdrop-blur-xl rounded-md p-2 text-white placeholder-white/70"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-white">Email</label>
+            <input
+              type="email"
+              className="w-full border border-white/40 bg-white/30 backdrop-blur-xl rounded-md p-2 text-white placeholder-white/70"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-white">Password</label>
+            <input
+              type="password"
+              className="w-full border border-white/40 bg-white/30 backdrop-blur-xl rounded-md p-2 text-white placeholder-white/70"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md shadow-lg"
+          >
+            Sign Up
+          </button>
         </form>
-        <div className="my-4 text-center text-gray-500">or</div>
-        <button onClick={handleGoogleSignup} className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded">Sign Up with Google</button>
-        <p className="mt-4 text-center text-gray-600">Already have an account? <a href="/login" className="text-blue-600">Login</a></p>
+
+        <div className="my-4 text-center text-white">or</div>
+
+        <button
+          onClick={handleGoogleSignup}
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md shadow-lg"
+        >
+          Sign Up with Google
+        </button>
+
+        <p className="mt-4 text-center text-white/90">
+          Already have an account?{" "}
+          <a href="/login" className="text-yellow-300 font-semibold">
+            Login
+          </a>
+        </p>
       </div>
     </div>
   );
