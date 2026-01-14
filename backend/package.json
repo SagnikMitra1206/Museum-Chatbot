@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/dialogflow": "^7.2.1",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dialogflow": "^1.2.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.5.0"
+  }
+}
