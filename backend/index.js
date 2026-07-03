@@ -11,6 +11,7 @@ import dialogflowRoutes from "./routes/dialogflowRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
 import verifyRoutes from "./routes/verifyRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,11 +27,12 @@ app.use("/tickets", express.static(path.join(__dirname, "tickets")));
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/dialogflow", dialogflowRoutes);
-app.use("/api/book", bookingRoutes);
+app.use("/api/booking", bookingRoutes);
 app.use("/api/my-tickets", ticketRoutes);
 app.use("/verify", verifyRoutes);
 app.use("/api/cancel", cancelRoutes);
 app.use("/api/shows", showRoutes);
+app.use("/api/payment", paymentRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`✅ Backend running on port ${PORT}`)

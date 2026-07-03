@@ -1,8 +1,12 @@
 import express from "express";
-import { bookTicket } from "../controllers/bookingController.js";
+import {
+  createPendingBooking,
+  confirmBooking,
+} from "../controllers/bookingController.js";
 
 const router = express.Router();
 
-router.post("/", bookTicket);
+router.post("/create", createPendingBooking);
+router.post("/confirm", confirmBooking);
 
 export default router;

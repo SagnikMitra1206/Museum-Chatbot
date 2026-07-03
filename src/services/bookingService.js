@@ -1,4 +1,4 @@
-const API_BOOK = "http://localhost:5000/api/book";
+const API_BOOK = "http://localhost:5000/api/booking/create";
 const API_CANCEL_TICKET = "http://localhost:5000/api/cancel";
 const API_MY_TICKETS = "http://localhost:5000/api/my-tickets";
 
@@ -28,28 +28,34 @@ export async function bookTickets(showId, showName, qty = 1, userId = "guest_use
       body: JSON.stringify({ showId, quantity: qty, userId }),
     });
 
-    const contentType = resp.headers.get("Content-Type") || "";
-    if (contentType.includes("application/json")) {
-      const data = await resp.json();
-      const message = data.reply ?? data.message ?? "Booking completed.";
+    const data = await resp.json();
+    console.log("📥 Booking response:", data);
+
+    if (!data.success) {
       return {
-        success: !!data.success ?? true,
-        message,
-        booking: data.booking ?? null,
+        success: false,
+        message: data.message || "Booking failed",
         raw: data,
       };
     }
 
-    if (resp.ok && contentType.includes("application/pdf")) {
-      await downloadPdfBlob(resp);
-      return { success: true, message: "Ticket downloaded (PDF).", booking: null };
-    }
-
-    const text = await resp.text().catch(() => null);
-    return { success: resp.ok, message: text ?? "Unknown response from booking service." };
+    return {
+      success: true,
+      message: data.message || "Booking created",
+      booking: {
+        ticketId: data.ticketId,
+        bookingCode: data.bookingCode,
+        showName: data.showName,
+        totalPrice: data.totalPrice,
+      },
+      raw: data,
+    };
   } catch (err) {
-    console.error("bookTickets network error:", err);
-    return { success: false, message: "Network error while booking. Please try again." };
+    console.error("bookTickets error:", err);
+    return {
+      success: false,
+      message: "Network error while booking",
+    };
   }
 }
 

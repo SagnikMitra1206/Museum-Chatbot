@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Landmark, ScrollText, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "../assets/museum.jpg";
+import MuseumMap from "../map/MuseumMap"; // ✅ ADD THIS
 
 export default function Home() {
+  const [showMap, setShowMap] = useState(false); // ✅ ADD THIS
+
   return (
     <div
       className="min-h-screen w-full bg-cover bg-center text-white"
       style={{
-        backgroundImage: `url(${heroImage})`,
+        backgroundImage: "url(" + heroImage + ")", // ✅ safer version
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -24,12 +28,12 @@ export default function Home() {
           </h1>
 
           <div className="space-x-6 font-medium">
-            <a href="/login" className="hover:text-amber-300 transition">
+            <Link to="/login" className="hover:text-amber-300 transition">
               Login
-            </a>
-            <a href="/signup" className="hover:text-amber-300 transition">
+            </Link>
+            <Link to="/signup" className="hover:text-amber-300 transition">
               Sign Up
-            </a>
+            </Link>
           </div>
         </nav>
 
@@ -54,12 +58,20 @@ export default function Home() {
             manuscripts, cultural heritage, and stories that shaped humanity.
           </motion.p>
 
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="mt-8 bg-amber-600 hover:bg-amber-800 px-8 py-3 rounded-lg text-xl shadow-lg transition"
           >
             Begin Your Visit →
-          </a>
+          </Link>
+
+          {/* ✅ ADD THIS BUTTON */}
+          <button
+            onClick={() => setShowMap(true)}
+            className="mt-4 bg-blue-600 hover:bg-blue-800 px-8 py-3 rounded-lg text-xl shadow-lg transition"
+          >
+            Explore Museum Map 🗺
+          </button>
         </div>
       </div>
 
@@ -70,69 +82,59 @@ export default function Home() {
         </h2>
 
         <div className="grid md:grid-cols-3 gap-10">
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20"
-          >
+          <motion.div className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20">
             <Landmark className="w-12 h-12 text-amber-400 mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">
-              Historical Artifacts
-            </h3>
+            <h3 className="text-2xl font-semibold mb-2">Historical Artifacts</h3>
             <p className="text-white/80">
-              Discover ancient tools, sculptures, coins, weapons, and relics
-              from civilizations across the world.
+              Discover ancient tools, sculptures, coins, weapons, and relics.
             </p>
           </motion.div>
 
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20"
-          >
+          <motion.div className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20">
             <ScrollText className="w-12 h-12 text-emerald-400 mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">
-              Manuscripts & Records
-            </h3>
+            <h3 className="text-2xl font-semibold mb-2">Manuscripts & Records</h3>
             <p className="text-white/80">
-              Explore preserved manuscripts, royal decrees, ancient texts,
-              and historical documents from different eras.
+              Explore preserved manuscripts and historical documents.
             </p>
           </motion.div>
 
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20"
-          >
+          <motion.div className="p-6 bg-white/10 rounded-2xl backdrop-blur-lg shadow-lg border border-white/20">
             <Users className="w-12 h-12 text-blue-400 mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">
-              Guided Experiences
-            </h3>
+            <h3 className="text-2xl font-semibold mb-2">Guided Experiences</h3>
             <p className="text-white/80">
-              Learn through curated tours, expert narratives, and interactive
-              exhibits designed for students and history enthusiasts.
+              Learn through curated tours and interactive exhibits.
             </p>
           </motion.div>
-
         </div>
       </div>
 
-      {/* CTA SECTION */}
-      <div className="bg-gradient-to-br from-amber-00 to-orange-800 py-16 text-center">
+      {/* CTA */}
+      <div className="bg-gradient-to-br from-amber-400 to-orange-800 py-16 text-center">
         <h2 className="text-4xl font-bold mb-4">
           Meet the Virtual Museum Guide
         </h2>
-        <p className="text-white/80 max-w-2xl mx-auto text-lg mb-6">
-          Ask questions about artifacts, timelines, dynasties, and cultural
-          heritage with our intelligent virtual guide.
-        </p>
 
-        <a
-          href="/app"
-          className="bg-white text-amber-700 font-semibold px-10 py-3 rounded-lg shadow-lg hover:bg-gray-200 transition"
+        <Link
+          to="/app"
+          className="bg-white text-amber-700 font-semibold px-10 py-3 rounded-lg shadow-lg"
         >
           Talk to the Guide 📜
-        </a>
+        </Link>
       </div>
+
+      {/* ✅ MAP OVERLAY */}
+      {showMap && (
+        <div className="fixed inset-0 bg-black z-50 overflow-auto">
+          <button
+            onClick={() => setShowMap(false)}
+            className="absolute top-5 right-5 text-white text-2xl z-50"
+          >
+            ✖
+          </button>
+
+          <MuseumMap onClose={() => setShowMap(false)} />
+        </div>
+      )}
     </div>
   );
 }

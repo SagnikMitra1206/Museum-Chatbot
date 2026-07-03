@@ -1,71 +1,115 @@
-// src/components/ChatInput.jsx
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function ChatInput({ input, setInput, onSend }) {
+  const [isListening, setIsListening] = useState(false);
+
+  const timerRef = useRef(null);
+
+  // ⏱️ AUTO SEND AFTER 5s SILENCE
+  const resetAutoSendTimer = (value) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    timerRef.current = setTimeout(() => {
+      const msg = value?.trim();
+
+      if (msg) {
+        onSend(msg);
+        setInput("");
+      }
+    }, 5000);
+  };
+
+  // 🧠 whenever input changes → restart timer
+  useEffect(() => {
+    if (input?.trim()) {
+      resetAutoSendTimer(input);
+    }
+
+    return () => clearTimeout(timerRef.current);
+  }, [input]);
+
+  // 📤 manual send
   const sendMessage = () => {
-    if (!input.trim()) return;
-    onSend();
+    const msg = input.trim();
+    if (!msg) return;
+
+    clearTimeout(timerRef.current);
+    onSend(msg);
+    setInput("");
+  };
+
+  // 🎤 voice input
+  const handleVoice = () => {
+    if (isListening) return;
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Voice not supported");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    setIsListening(true);
+
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+
+      if (text?.trim()) {
+        setInput(text); // 🔥 same as typing
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
   };
 
   return (
-    <div className="px-4 py-4 bg-white border-t border-slate-200 shadow-sm">
-      <div className="max-w-3xl mx-auto flex items-center gap-3">
+    <div className="px-4 py-4 bg-white border-t">
+      <div className="flex gap-3 max-w-3xl mx-auto">
 
-        {/* Input Field */}
+        {/* 🎤 Mic */}
+        <button
+          onClick={handleVoice}
+          disabled={isListening}
+          className={`p-3 rounded-full ${
+            isListening ? "bg-red-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          🎤
+        </button>
+
+        {/* 📝 Input */}
         <input
-          type="text"
           value={input}
-          placeholder="Ask about shows, timings, ticket prices..."
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          className="
-            flex-1 px-5 py-3
-            rounded-full
-            border border-slate-300
-            bg-slate-50
-            shadow-inner
-            text-slate-700
-            placeholder-slate-400
-            focus:outline-none
-            focus:ring-2 focus:ring-teal-500 focus:border-teal-500
-            transition
-          "
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
+          placeholder={isListening ? "Listening..." : "Type or speak..."}
+          className="flex-1 px-4 py-3 border rounded-full"
         />
 
-        {/* Send Button */}
+        {/* 📤 Send */}
         <button
           onClick={sendMessage}
           disabled={!input.trim()}
-          className={`
-            flex items-center gap-2
-            px-5 py-3
-            rounded-full
-            font-medium
-            text-white
-            transition-transform
-            shadow-md
-            active:scale-95
-            ${
-              input.trim()
-                ? "bg-teal-600 hover:bg-teal-700"
-                : "bg-slate-300 cursor-not-allowed"
-            }
-          `}
+          className="px-5 py-3 bg-teal-600 text-white rounded-full disabled:bg-gray-300"
         >
-          <span>Send</span>
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 12h14M12 5l7 7-7 7"
-            />
-          </svg>
+          Send
         </button>
       </div>
     </div>
