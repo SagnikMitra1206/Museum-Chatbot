@@ -3,14 +3,25 @@ import CampusMap from "./CampusMap";
 import BuildingEntry from "./BuildingEntry";
 import GroundFloor from "./GroundFloor";
 import FirstFloor from "./FirstFloor";
-import Prehistoric from "./Prehistoric"; // ✅ NEW
+
+import Prehistoric from "./Prehistoric";
+import AncientIndia from "./AncientIndia";
+import InteractiveZone from "./InteractiveZone";
+import MedievalIndia from "./MedievalIndia";
+import ArtExhibition from "./ArtExhibition";
+import ModernIndia from "./ModernIndia";
 
 export default function MuseumMap({ onClose }) {
   const [view, setView] = useState("campus");
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", background: "#fff" }}>
-      
+    <div
+      style={{
+        position: "relative",
+        minHeight: "100vh",
+        background: "#fff",
+      }}
+    >
       {/* CLOSE BUTTON */}
       <button
         onClick={onClose}
@@ -24,17 +35,19 @@ export default function MuseumMap({ onClose }) {
           border: "none",
           background: "#1f2d3d",
           color: "white",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         ✖ Close
       </button>
 
-      {/* ===== MAP FLOW ===== */}
+      {/* ================= CAMPUS ================= */}
 
       {view === "campus" && (
         <CampusMap onEnter={() => setView("building")} />
       )}
+
+      {/* ================= BUILDING ================= */}
 
       {view === "building" && (
         <BuildingEntry
@@ -43,21 +56,55 @@ export default function MuseumMap({ onClose }) {
         />
       )}
 
+      {/* ================= GROUND FLOOR ================= */}
+
       {view === "ground" && (
         <GroundFloor
           onBack={() => setView("building")}
-          onEnterPrehistoric={() => setView("prehistoric")} // ✅ NEW
+          onEnterPrehistoric={() => setView("prehistoric")}
+          onEnterAncient={() => setView("ancient")}
+          onEnterInteractive={() => setView("interactive")}
         />
       )}
 
+      {/* ================= FIRST FLOOR ================= */}
+
       {view === "first" && (
-        <FirstFloor onBack={() => setView("building")} />
+        <FirstFloor
+          onBack={() => setView("building")}
+          onEnterMedieval={() => setView("medieval")}
+          onEnterArt={() => setView("art")}
+          onEnterModern={() => setView("modern")}
+        />
       )}
+
+      {/* ================= GROUND FLOOR GALLERIES ================= */}
 
       {view === "prehistoric" && (
-        <Prehistoric onBack={() => setView("ground")} /> // ✅ NEW
+        <Prehistoric onBack={() => setView("ground")} />
       )}
 
+      {view === "ancient" && (
+        <AncientIndia onBack={() => setView("ground")} />
+      )}
+
+      {view === "interactive" && (
+        <InteractiveZone onBack={() => setView("ground")} />
+      )}
+
+      {/* ================= FIRST FLOOR GALLERIES ================= */}
+
+      {view === "medieval" && (
+        <MedievalIndia onBack={() => setView("first")} />
+      )}
+
+      {view === "art" && (
+        <ArtExhibition onBack={() => setView("first")} />
+      )}
+
+      {view === "modern" && (
+        <ModernIndia onBack={() => setView("first")} />
+      )}
     </div>
   );
 }

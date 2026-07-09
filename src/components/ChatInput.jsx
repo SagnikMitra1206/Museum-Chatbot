@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export default function ChatInput({ input, setInput, onSend }) {
   const [isListening, setIsListening] = useState(false);
-
+  const dateInputRef = useRef(null);
   const timerRef = useRef(null);
 
   // ⏱️ AUTO SEND AFTER 5s SILENCE
@@ -76,38 +76,66 @@ export default function ChatInput({ input, setInput, onSend }) {
 
     recognition.start();
   };
+  const handleDateSelect = (e) => {
+  const selectedDate = e.target.value;
 
+  if (!selectedDate) return;
+
+  setInput(selectedDate);
+};
   return (
-    <div className="px-4 py-4 bg-white border-t">
+    <div className="px-4 py-4 bg-white/30 border-t border-white/20">
       <div className="flex gap-3 max-w-3xl mx-auto">
 
         {/* 🎤 Mic */}
         <button
           onClick={handleVoice}
           disabled={isListening}
-          className={`p-3 rounded-full ${
-            isListening ? "bg-red-500 text-white" : "bg-gray-200"
+          className={`p-3 rounded-full shadow-sm hover:shadow transition duration-200 cursor-pointer ${
+            isListening ? "bg-red-500 text-white animate-pulse" : "bg-white/50 hover:bg-white/70 border border-white/30"
           }`}
+          title="Speak"
         >
           🎤
         </button>
 
         {/* 📝 Input */}
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
-          }}
-          placeholder={isListening ? "Listening..." : "Type or speak..."}
-          className="flex-1 px-4 py-3 border rounded-full"
-        />
+<input
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") sendMessage();
+  }}
+  placeholder={isListening ? "Listening..." : "Type or speak..."}
+  className="flex-1 px-5 py-3 bg-white/40 border border-white/30 rounded-full focus:ring-2 focus:ring-emerald-400 focus:outline-none placeholder-slate-500 text-slate-800 shadow-inner"
+/>
+
+{/* 📅 Calendar */}
+<button
+  type="button"
+  onClick={() => dateInputRef.current?.showPicker()}
+  className="p-3 rounded-full bg-white/50 hover:bg-white/70 border border-white/30 shadow-sm transition"
+  title="Select Date"
+>
+  📅
+</button>
+
+<input
+  ref={dateInputRef}
+  type="date"
+  min={new Date().toISOString().split("T")[0]}
+  max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0]}
+  onChange={handleDateSelect}
+  className="hidden"
+/>
 
         {/* 📤 Send */}
         <button
           onClick={sendMessage}
           disabled={!input.trim()}
-          className="px-5 py-3 bg-teal-600 text-white rounded-full disabled:bg-gray-300"
+          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-white/30 disabled:text-slate-400 text-white font-semibold rounded-full shadow-md transition duration-200 cursor-pointer disabled:cursor-not-allowed"
         >
           Send
         </button>
